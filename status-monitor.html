@@ -1,11 +1,34 @@
-<div>
-    <div class="media container">
-        <div class="media-right">
-            <img class="media-object" ng-src="{{ imageUrl }}">
-        </div>
-        <div class="media-body">
-            <p class="lead"> {{ translate }} </p>
-        </div>
-    </div>
-    <div class="text-center alert alert-info" style="margin-top: 5px"> {{ translate }}</div>
-</div>
+var statusMonitor = angular.module('statusMonitor', ['extensionInterface', 'translateFilter']);
+
+statusMonitor.directive("statusMonitorArea", function () {
+    return {
+        restrict: 'E',
+        templateUrl: 'templates/status-monitor.html',
+        controller: ['$scope', 'extensionStatus', function ($scope, extensionStatus) {
+            var messages, setValues;
+            messages = {
+                'true': {
+                    statusMessage: "",
+                    statusMediaMessage: "        Privacy Protected",
+                    icon: "assets/img/icon/icon_48.png"
+                },
+                'false': {
+                    statusMessage: "",
+                    statusMediaMessage: "        Protection Disabled",
+                    icon: "assets/img/icon/icon_BW_48.png"
+                }
+            };
+            setValues = function (values) {
+                $scope.statusMediaMessage = values.statusMediaMessage;
+                $scope.statusMessage = values.statusMessage;
+                $scope.imageUrl = values.icon;
+            };
+            console.log('status', extensionStatus);
+            setValues(messages[extensionStatus.status]);
+
+            extensionStatus.onChange(function (status) {
+                setValues(messages[status]);
+            });
+        }]
+    }
+});
